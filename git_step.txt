@@ -1,4 +1,7 @@
 git init
 creer a la racine le fichier gitignore
 dans le fichier .gitignore on mets la listes des dossiers volumineux qu on n'enverra pas dans le github
-lancer la commande: git add.
+lancer la commande: "git add ."
+lancer la commande : git commit -m "message"
+on doit lier ce projet avec le repository : git remote add origin https://github.com/JRichard125/js-todoapp.git
+git push -u origin master
