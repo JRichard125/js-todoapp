@@ -6,8 +6,8 @@ const form = document.querySelector("form");
 const input = document.querySelector("form > input");
 
 const todos = [
-    {text: "Aller faire les courses", done: false }, 
-    {text: "Aller faire les resultats cliniques", done: true }, 
+    {text: "Aller faire les courses", done: false, editMode: false }, 
+    {text: "Aller faire les resultats cliniques", done: true, editMode: false }, 
 ]
 
 form.addEventListener('submit', (event) => {
@@ -15,7 +15,7 @@ form.addEventListener('submit', (event) => {
     const todoText = input.value; // je recupère le texte dans la zone de saisie du input
     input.value = ''; // on réinitialise la zone de saisie en la vidant
 
-    const newTodo = {text: todoText, done:false}; // on creer une tache
+    const newTodo = {text: todoText, done:false, editMode: false}; // on creer une tache
     todos.push(newTodo); // on ajoute cette nouvelle tache dans la liste des taches todo
     displayTodos();
 })
@@ -24,8 +24,13 @@ form.addEventListener('submit', (event) => {
 const createTodoElement = (todo, index) => {
     const li = document.createElement('li');
     const deleteBtn = document.createElement('button');
+    const editBtn = document.createElement('button')
+
+
     li.classList.add("d-flex", "align-items-start");
     deleteBtn.classList.add("btn", "btn-danger", "mx-2");
+    editBtn.classList.add("btn", "btn-primary", "mx-2");
+    
 
     deleteBtn.innerText = 'Supprimer';
     deleteBtn.addEventListener('click', (event) => {
@@ -34,10 +39,16 @@ const createTodoElement = (todo, index) => {
         displayTodos();
     })
 
+    editBtn.innerText ='Editer';
+    editBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        todos[index].editMode= !todos[index].editMode;
+        displayTodos();
+    })
+
     li.innerHTML = `
         <span class="todo ${todo.done ? 'done' : ''}"></span>
         <p class="w-100">${todo.text}</p>
-        <button class="btn btn-primary mx-2">Editer</button>
     `
 
     li.addEventListener('click', (event) => {
@@ -45,15 +56,55 @@ const createTodoElement = (todo, index) => {
         displayTodos();
     })
 
-    li.appendChild(deleteBtn);
+    li.append(editBtn, deleteBtn);
 
+    return li;
+}
+
+const createTodoEditElement = (todo, index) => {
+    const li = document.createElement('li');
+    const input = document.createElement('input');
+    const saveBtn = document.createElement('button');
+    const cancelBtn = document.createElement('button');
+
+    li.classList.add("d-flex", "align-items-start");
+    input.classList.add("w-100")
+    saveBtn.classList.add("btn", "btn-primary", "mx-2");
+    cancelBtn.classList.add("btn", "btn-danger", "mx-2");
+
+    input.type = "text"
+    input.value = todo.text;
+
+    saveBtn.innerText = "Sauvegarder";
+    cancelBtn.innerText = "Annuler";
+
+    cancelBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        todos[index].editMode = !todos[index].editMode;
+        displayTodos();
+    })
+
+
+    saveBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const value = input.value;
+        todos[index].text = value;
+        todos[index].editMode = false;
+        displayTodos();
+    })
+
+    li.append(input, cancelBtn, saveBtn);
     return li;
 }
 
 // fonction flechee qui va afficher la liste des taches, map renvoir un array filter renvoie un array reduce renvoie une valeur
 const displayTodos = () => {
     const todosNode = todos.map((todo, index) => {
-        return createTodoElement(todo, index)
+        if(todo.editMode) {
+            return createTodoEditElement(todo, index);
+        } else {
+            return createTodoElement(todo, index)
+        }
     })
 
     ulContainer.innerHTML = ''
