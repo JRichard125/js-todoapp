@@ -3,7 +3,7 @@
 ## Fonctionnalites
 - Ajout d'une tache
 - Suppression d'une tache
-- Modificaation d'une tache
+- Modification d'une tache
 - Marquer une tache comme accomplie
 
 ## Stack
